@@ -393,6 +393,34 @@ footer{text-align:center;padding:18px;color:rgba(90,85,80,.4);font-size:7px;lett
 .field-err{border-color:#b05050!important;box-shadow:0 0 0 2px rgba(176,80,80,.15)}
 .err-msg{font-size:9px;color:#b05050;letter-spacing:1px;margin-top:4px;display:none}
 .err-msg.on{display:block}
+
+/* ── MODE SELECTOR (product card) ── */
+.mode-sel{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px}
+.mode-btn{flex:1;min-width:0;background:var(--ad);border:1px solid var(--ab);color:var(--a);padding:7px 6px;border-radius:3px;cursor:pointer;font-family:'Montserrat',sans-serif;display:flex;flex-direction:column;align-items:center;gap:3px;transition:all .2s;white-space:nowrap;overflow:hidden}
+.mode-btn:hover{background:var(--ab)}
+.mode-btn.on{background:var(--a);border-color:var(--al);box-shadow:0 2px 10px var(--ad)}
+.mode-btn-lbl{font-size:7px;letter-spacing:1.5px;transition:color .2s}
+.mode-btn-price{font-family:'Cormorant Garamond',serif;font-size:15px;line-height:1;transition:color .2s}
+.mode-btn.on .mode-btn-lbl,.mode-btn.on .mode-btn-price{color:var(--bg)}
+/* ── CART TOTALS BAR ── */
+.cc-stat{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:3px 0}
+/* ── CART ITEM MODAL TAG ── */
+.ci-mode-tag{display:inline-block;font-size:7px;letter-spacing:2px;color:var(--a);background:var(--ad);border:1px solid var(--ab);border-radius:2px;padding:2px 7px;margin-bottom:3px}
+/* ── ADMIN MODES SECTION ── */
+.modes-section{margin-top:14px;padding-top:14px;border-top:1px solid var(--ab)}
+.modes-section-title{font-size:7px;letter-spacing:3px;color:var(--a);margin-bottom:10px}
+.mode-presets{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px}
+.mode-preset-btn{background:transparent;border:1px solid var(--ab);color:var(--a);padding:5px 11px;border-radius:2px;cursor:pointer;font-family:'Montserrat',sans-serif;font-size:8px;letter-spacing:1.5px;transition:all .2s}
+.mode-preset-btn:hover{background:var(--ad)}
+.mode-row{display:flex;align-items:center;gap:6px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+.mode-row:last-child{border-bottom:none}
+.mode-inp-lbl{width:90px;flex-shrink:0}
+.mode-inp-qty{width:52px;flex-shrink:0}
+.mode-inp-price{flex:1;min-width:0}
+.mode-row-rm{background:transparent;border:1px solid rgba(180,60,60,.25);color:#b05050;width:24px;height:24px;border-radius:2px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s}
+.mode-row-rm:hover{background:rgba(180,60,60,.12)}
+.modes-add-btn{margin-top:8px;background:transparent;border:1px dashed var(--ab);color:var(--muted);width:100%;padding:8px;border-radius:2px;cursor:pointer;font-family:'Montserrat',sans-serif;font-size:8px;letter-spacing:2px;transition:all .2s}
+.modes-add-btn:hover{border-color:var(--a);color:var(--a)}
 </style>
 </head>
 <body>
@@ -535,9 +563,24 @@ footer{text-align:center;padding:18px;color:rgba(90,85,80,.4);font-size:7px;lett
         <div class="err-msg" id="np-name-err">⚠ El nombre es obligatorio.</div>
         <label class="albl">CATEGORÍA</label>
         <select class="ainp" id="np-cat"></select>
-        <label class="albl">PRECIO</label>
-        <input class="ainp" id="np-price" type="text" inputmode="numeric" placeholder="Ej: 29000 ó 29.000" oninput="clearFieldErr('np-price','np-price-err')">
+        <label class="albl">PRECIO BASE (por pieza)</label>
+        <input class="ainp" id="np-price" type="text" inputmode="numeric" placeholder="Ej: 29000 ó 29.000" oninput="clearFieldErr('np-price','np-price-err');syncBasePriceToModes('np')">
         <div class="err-msg" id="np-price-err">⚠ El precio debe ser mayor a cero.</div>
+
+        <div class="modes-section">
+          <div class="modes-section-title">MODALIDADES DE VENTA</div>
+          <div class="modes-section-title" style="color:var(--muted);letter-spacing:1px;font-size:7px;margin-bottom:8px">Agregar rápido:</div>
+          <div class="mode-presets">
+            <button type="button" class="mode-preset-btn" onclick="addPresetMode('np','Pieza',1)">✦ PIEZA</button>
+            <button type="button" class="mode-preset-btn" onclick="addPresetMode('np','Par',2)">✦ PAR ×2</button>
+            <button type="button" class="mode-preset-btn" onclick="addPresetMode('np','Docena',12)">✦ DOCENA ×12</button>
+            <button type="button" class="mode-preset-btn" onclick="addPresetMode('np','Caja',24)">✦ CAJA ×24</button>
+            <button type="button" class="mode-preset-btn" onclick="addPresetMode('np','Pack x6',6)">✦ PACK ×6</button>
+            <button type="button" class="mode-preset-btn" onclick="addPresetMode('np','Pack x8',8)">✦ PACK ×8</button>
+          </div>
+          <div id="np-modes-list"></div>
+          <button type="button" class="modes-add-btn" onclick="addCustomModeRow('np')">+ MODALIDAD PERSONALIZADA</button>
+        </div>
         <label class="albl">MATERIAL</label>
         <select class="ainp" id="np-mat">
           <option>Acero</option><option>Cobre</option><option>Acero y Cobre</option>
@@ -632,22 +675,17 @@ footer{text-align:center;padding:18px;color:rgba(90,85,80,.4);font-size:7px;lett
     <span class="dtitle">🛍&nbsp; MI CARRITO</span>
     <button class="btnx" onclick="closeCart()">✕</button>
   </div>
-  <!-- MODE SELECTOR -->
+  <!-- CART TOTALS BAR -->
   <div id="cart-counter">
-    <div style="font-size:7px;letter-spacing:3px;color:var(--muted);padding:10px 18px 6px">CONTAR Y AGREGAR POR:</div>
-    <div style="display:flex;padding:0 18px 12px;gap:6px">
-      <button class="mdbtn on" id="md-pieza" onclick="setMode('pieza')">
-        <div class="md-num" id="cc-piezas">0</div><div class="md-lbl">PIEZAS</div>
-      </button>
-      <button class="mdbtn" id="md-par" onclick="setMode('par')">
-        <div class="md-num" id="cc-pares">0</div><div class="md-lbl">PARES</div>
-      </button>
-      <button class="mdbtn" id="md-docena" onclick="setMode('docena')">
-        <div class="md-num" id="cc-doc">0</div><div class="md-lbl">DOCENAS</div>
-      </button>
-      <button class="mdbtn" id="md-caja" onclick="setMode('caja')">
-        <div class="md-num" id="cc-cajas">0</div><div class="md-lbl">CAJAS×24</div>
-      </button>
+    <div style="font-size:7px;letter-spacing:3px;color:var(--muted);padding:8px 18px 4px">RESUMEN DEL PEDIDO</div>
+    <div style="display:flex;padding:0 18px 10px;gap:0">
+      <div class="cc-stat"><div class="md-num" id="cc-piezas">0</div><div class="md-lbl">PIEZAS</div></div>
+      <div style="width:1px;background:var(--ab);margin:4px 0"></div>
+      <div class="cc-stat"><div class="md-num" id="cc-pares">0</div><div class="md-lbl">PARES</div></div>
+      <div style="width:1px;background:var(--ab);margin:4px 0"></div>
+      <div class="cc-stat"><div class="md-num" id="cc-doc">0</div><div class="md-lbl">DOCENAS</div></div>
+      <div style="width:1px;background:var(--ab);margin:4px 0"></div>
+      <div class="cc-stat"><div class="md-num" id="cc-cajas">0</div><div class="md-lbl">CAJAS×24</div></div>
     </div>
   </div>
   <div id="citems"></div>
@@ -738,8 +776,23 @@ footer{text-align:center;padding:18px;color:rgba(90,85,80,.4);font-size:7px;lett
     <input class="ainp" id="ename">
     <label class="albl">CATEGORÍA</label>
     <select class="ainp" id="ecat"></select>
-    <label class="albl">PRECIO</label>
-    <input class="ainp" id="eprice" type="text" inputmode="numeric">
+    <label class="albl">PRECIO BASE (por pieza)</label>
+    <input class="ainp" id="eprice" type="text" inputmode="numeric" oninput="syncBasePriceToModes('ep')">
+
+    <div class="modes-section">
+      <div class="modes-section-title">MODALIDADES DE VENTA</div>
+      <div class="modes-section-title" style="color:var(--muted);letter-spacing:1px;font-size:7px;margin-bottom:8px">Agregar rápido:</div>
+      <div class="mode-presets">
+        <button type="button" class="mode-preset-btn" onclick="addPresetMode('ep','Pieza',1)">✦ PIEZA</button>
+        <button type="button" class="mode-preset-btn" onclick="addPresetMode('ep','Par',2)">✦ PAR ×2</button>
+        <button type="button" class="mode-preset-btn" onclick="addPresetMode('ep','Docena',12)">✦ DOCENA ×12</button>
+        <button type="button" class="mode-preset-btn" onclick="addPresetMode('ep','Caja',24)">✦ CAJA ×24</button>
+        <button type="button" class="mode-preset-btn" onclick="addPresetMode('ep','Pack x6',6)">✦ PACK ×6</button>
+        <button type="button" class="mode-preset-btn" onclick="addPresetMode('ep','Pack x8',8)">✦ PACK ×8</button>
+      </div>
+      <div id="ep-modes-list"></div>
+      <button type="button" class="modes-add-btn" onclick="addCustomModeRow('ep')">+ MODALIDAD PERSONALIZADA</button>
+    </div>
     <label class="albl">MATERIAL</label>
     <select class="ainp" id="emat">
       <option>Acero</option><option>Cobre</option><option>Acero y Cobre</option>
@@ -810,6 +863,7 @@ function save(){localStorage.setItem(DKEY,JSON.stringify(DB))}
 let DB=loadDB();
 let cart=[], activeCat="Todos", activeMat="cobre", adminOk=false;
 let activeSearch="", activeSortMode="default";
+let selectedMode={};  // {[productId]: modeIndex}
 let newPhoto=null, newPhoto2=null, newPhoto3=null, editPhoto=null, editPhoto2=null, editPhoto3=null;
 
 // LOGO
@@ -956,7 +1010,8 @@ function renderGrid(){
           <span class="cfeat">Acabado premium</span>
           <span class="cfeat">Brillo duradero</span>
         </div>
-        <div class="cprice">${fmt(parseP(p.price))}</div>
+        ${(()=>{const ms=getEffectiveModes(p);const si=selectedMode[p.id]||0;const sm=ms[si]||ms[0];return ms.length>1?'<div class="mode-sel" id="msel-'+p.id+'">'+ms.map((m,i)=>'<button class="mode-btn'+(i===si?' on':'')+'" onclick="selectMode('+p.id+','+i+')"><span class="mode-btn-lbl">'+m.label.toUpperCase()+'</span><span class="mode-btn-price">'+fmt(m.price)+'</span></button>').join('')+'</div>':''})()}
+        <div class="cprice" id="cprice-${p.id}">${fmt((getEffectiveModes(p)[selectedMode[p.id]||0]||getEffectiveModes(p)[0]).price)}</div>
         <button class="btn-add" onclick="addToCart(${p.id})">+ AGREGAR AL CARRITO</button>
         <button class="btn-wa-quick" onclick="waProduct(${p.id})"><svg viewBox='0 0 24 24'><path d='M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413z'/><path d='M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.114 1.523 5.845L.057 23.428a.5.5 0 00.609.61l5.718-1.484A11.95 11.95 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.947 0-3.77-.527-5.339-1.443l-.383-.225-3.393.881.896-3.285-.246-.399A9.955 9.955 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z'/></svg>CONSULTAR POR WHATSAPP</button>
       </div>
@@ -1001,11 +1056,16 @@ function galEnd(e,id){
 // CART
 function addToCart(id){
   const p=DB.products.find(x=>x.id===id);if(!p)return;
-  const ex=cart.find(i=>i.id===id);
-  if(ex)ex.qty+=stepOf();else cart.push({id:p.id,name:p.name,price:p.price,image:p.image||null,qty:stepOf()});
+  const modes=getEffectiveModes(p);
+  const si=selectedMode[id]||0;
+  const mode=modes[si]||modes[0];
+  // Find existing cart item with same id AND same mode key
+  const ex=cart.find(i=>i.id===id&&i.mode&&i.mode.key===mode.key);
+  if(ex){ex.qty+=mode.qty;}
+  else{cart.push({id:p.id,name:p.name,image:p.image||null,qty:mode.qty,mode:{key:mode.key,label:mode.label,qty:mode.qty,price:mode.price}});}
   updateBadge();
-  const shortName=p.name.length>28?p.name.substring(0,27)+'…':p.name;
-  toast('✓ '+shortName);
+  const shortName=p.name.length>26?p.name.substring(0,25)+'…':p.name;
+  toast('✓ '+shortName+' ('+mode.label+')');
 }
 function updateBadge(){
   const n=cart.reduce((s,i)=>s+i.qty,0);
@@ -1017,43 +1077,46 @@ function updateBadge(){
 }
 function openCart(){renderCart();document.getElementById('overlay').classList.add('on');document.getElementById('drawer').classList.add('on')}
 function closeCart(){document.getElementById('overlay').classList.remove('on');document.getElementById('drawer').classList.remove('on')}
-// MODE: pieza=1, par=2, docena=12, caja=24
-const MODES={pieza:1, par:2, docena:12, caja:24};
-const MODE_LABELS={pieza:'pieza',par:'par',docena:'docena',caja:'caja×24'};
-let countMode='pieza';
-
-function setMode(m){
-  countMode=m;
-  document.querySelectorAll('.mdbtn').forEach(b=>b.classList.remove('on'));
-  document.getElementById(`md-${m}`).classList.add('on');
-  renderCart();
+// ── MODES SYSTEM ──────────────────────────────────────────────
+function getEffectiveModes(p){
+  if(p&&p.modes&&p.modes.length>0)return p.modes;
+  return [{key:'pieza',label:'Pieza',qty:1,price:parseP(p?p.price:0)}];
+}
+function selectMode(id,idx){
+  selectedMode[id]=idx;
+  const p=DB.products.find(x=>x.id===id);if(!p)return;
+  const modes=getEffectiveModes(p);
+  const m=modes[idx]||modes[0];
+  // update mode buttons
+  const msel=document.getElementById('msel-'+id);
+  if(msel)msel.querySelectorAll('.mode-btn').forEach((b,i)=>b.classList.toggle('on',i===idx));
+  // update price display
+  const pe=document.getElementById('cprice-'+id);
+  if(pe)pe.textContent=fmt(m.price);
 }
 
-function stepOf(){return MODES[countMode]||1;}
-
-function chgQty(id,dir){
-  // dir = +1 or -1, step = current mode unit
-  const i=cart.find(x=>x.id===id);if(!i)return;
-  const step=stepOf();
-  i.qty=Math.max(step, i.qty+(dir*step));
+function chgQty(cartIdx,dir){
+  const i=cart[cartIdx];if(!i)return;
+  const step=(i.mode&&i.mode.qty)||1;
+  i.qty=Math.max(step,i.qty+(dir*step));
   updateBadge();renderCart();
 }
 
-function rmItem(id){cart=cart.filter(i=>i.id!==id);updateBadge();renderCart()}
+function rmItem(cartIdx){cart.splice(cartIdx,1);updateBadge();renderCart()}
 
-function setExactQty(id){
-  const cur=cart.find(x=>x.id===id);if(!cur)return;
-  const step=stepOf();
-  const lbl=MODE_LABELS[countMode];
+function setExactQty(cartIdx){
+  const cur=cart[cartIdx];if(!cur)return;
+  const step=(cur.mode&&cur.mode.qty)||1;
+  const lbl=(cur.mode&&cur.mode.label)||'pieza';
   const curVal=cur.qty/step;
-  const input=prompt(`¿Cuántas ${lbl}s para "${cur.name}"?\nActual: ${curVal} ${lbl}${curVal!==1?'s':''} (${cur.qty} piezas)`,'');
+  const input=prompt('¿Cuántas '+lbl+' para "'+cur.name+'"?
+Actual: '+curVal+' ('+cur.qty+' piezas)','');
   if(input===null||input.trim()==='')return;
   const val=parseFloat(input.replace(',','.'));
   if(isNaN(val)||val<=0){toast("Número inválido");return;}
   cur.qty=Math.round(val*step);
-  updateBadge();renderCart();toast(`✓ ${val} ${lbl}${val!==1?'s':''} = ${cur.qty} piezas`);
+  updateBadge();renderCart();toast('✓ '+val+' '+lbl+' = '+cur.qty+' piezas');
 }
-
 function qtyBreakdown(qty){
   if(!qty)return'';
   const doc=Math.floor(qty/12),rem=qty%12;
@@ -1069,49 +1132,51 @@ function updateCounter(){
   const counter=document.getElementById('cart-counter');
   if(!total){counter.classList.remove('on');return;}
   counter.classList.add('on');
+  const fmt1=n=>n%1===0?n:n.toFixed(1);
   document.getElementById('cc-piezas').textContent=total;
-  document.getElementById('cc-pares').textContent=(total/2%1===0)?(total/2):(total/2).toFixed(1);
-  document.getElementById('cc-doc').textContent=(total/12%1===0)?(total/12):(total/12).toFixed(1);
-  document.getElementById('cc-cajas').textContent=(total/24%1===0)?(total/24):(total/24).toFixed(1);
+  document.getElementById('cc-pares').textContent=fmt1(total/2);
+  document.getElementById('cc-doc').textContent=fmt1(total/12);
+  document.getElementById('cc-cajas').textContent=fmt1(total/24);
 }
 
 function renderCart(){
   const el=document.getElementById('citems');
   const isSilver=document.body.classList.contains('silver');
   const gem=gemSVG(isSilver?'#aec0c8':'#c9a84c');
-  const step=stepOf();
-  const lbl=MODE_LABELS[countMode];
 
   if(!cart.length){
-    el.innerHTML=`<div class="cempty">CARRITO VACÍO</div>`;
+    el.innerHTML='<div class="cempty">CARRITO VACÍO</div>';
     document.getElementById('dsec').style.display='none';
     document.getElementById('csum').style.display='none';
     updateCounter();
     return;
   }
 
-  el.innerHTML=cart.map(item=>{
-    const units=item.qty/step; // how many of current mode
+  el.innerHTML=cart.map((item,idx)=>{
+    const mode=item.mode||{key:'pieza',label:'Pieza',qty:1,price:parseP(item.price||0)};
+    const units=item.qty/mode.qty;
     const unitsDisplay=(units%1===0)?units:units.toFixed(1);
-    return `
-    <div class="ci">
-      ${item.image?`<img class="cithumb" src="${item.image}" alt="">`:`<div class="cithph">${gem}</div>`}
-      <div class="ciinfo" style="min-width:0;flex:1">
-        <div class="ciname">${item.name}</div>
-        <div class="ciprice">${fmt(parseP(item.price))} c/u &nbsp;·&nbsp; <span class="csub">${fmt(parseP(item.price)*item.qty)}</span></div>
-        <div class="ciqty">
-          <button class="qbtn" onclick="chgQty(${item.id},-1)">−</button>
-          <div style="text-align:center;min-width:48px">
-            <div style="font-size:15px;font-weight:600;color:var(--text);line-height:1">${unitsDisplay}</div>
-            <div style="font-size:7px;letter-spacing:1px;color:var(--a)">${lbl}${unitsDisplay!=='1'?'s':''}</div>
-          </div>
-          <button class="qbtn" onclick="chgQty(${item.id},1)">+</button>
-          <button class="qfbtn" onclick="setExactQty(${item.id})" style="margin-left:4px">✎ editar</button>
-        </div>
-        ${qtyBreakdown(item.qty)}
-      </div>
-      <button class="btnrm" onclick="rmItem(${item.id})">✕</button>
-    </div>`;
+    const lineTotal=mode.price*units;
+    const breakdown=item.qty>mode.qty?'<div class="qbreakdown">'+item.qty+' piezas &nbsp;·&nbsp; '+fmt1r(item.qty/12)+' doc.</div>':'';
+    return '<div class="ci">'+
+      (item.image?'<img class="cithumb" src="'+item.image+'" alt="">':'<div class="cithph">'+gem+'</div>')+
+      '<div class="ciinfo" style="min-width:0;flex:1">'+
+        '<div class="ci-mode-tag">'+mode.label.toUpperCase()+'</div>'+
+        '<div class="ciname">'+item.name+'</div>'+
+        '<div class="ciprice">'+fmt(mode.price)+' / '+mode.label+' &nbsp;·&nbsp; <span class="csub">'+fmt(lineTotal)+'</span></div>'+
+        '<div class="ciqty">'+
+          '<button class="qbtn" onclick="chgQty('+idx+',-1)">−</button>'+
+          '<div style="text-align:center;min-width:52px">'+
+            '<div style="font-size:16px;font-weight:600;color:var(--text);line-height:1">'+unitsDisplay+'</div>'+
+            '<div style="font-size:7px;letter-spacing:1px;color:var(--a)">'+mode.label+(unitsDisplay!=='1'&&mode.qty>1?'s':'')+'</div>'+
+          '</div>'+
+          '<button class="qbtn" onclick="chgQty('+idx+',1)">+</button>'+
+          '<button class="qfbtn" onclick="setExactQty('+idx+')" style="margin-left:4px">✎ editar</button>'+
+        '</div>'+
+        breakdown+
+      '</div>'+
+      '<button class="btnrm" onclick="rmItem('+idx+')">✕</button>'+
+    '</div>';
   }).join('');
 
   document.getElementById('dsec').style.display='block';
@@ -1120,6 +1185,7 @@ function renderCart(){
   updateVolumeUI();
   renderSum();
 }
+function fmt1r(n){return n%1===0?n:n.toFixed(1);}
 const TIERS=[{doc:12,pct:10},{doc:28,pct:20},{doc:55,pct:30}];
 
 function totalDozens(){
@@ -1140,7 +1206,7 @@ let _lastPct=0;
 function updateVolumeUI(){
   const doz=totalDozens();
   const pct=autoDisc();
-  const sub=cart.reduce((s,i)=>s+(parseP(i.price)*i.qty),0);
+  const sub=cart.reduce((s,i)=>{const m=i.mode||{price:parseP(i.price||0),qty:1};return s+(m.price*(i.qty/m.qty));},0);
   const saving=sub*(pct/100);
 
   // ── Docena counter pill
@@ -1223,7 +1289,7 @@ function updateVolumeUI(){
 }
 
 function renderSum(){
-  const sub=cart.reduce((s,i)=>s+(parseP(i.price)*i.qty),0);
+  const sub=cart.reduce((s,i)=>{const m=i.mode||{price:parseP(i.price||0),qty:1};return s+(m.price*(i.qty/m.qty));},0);
   const pct=autoDisc();
   const da=sub*(pct/100), tot=sub-da;
   document.getElementById('s-sub').textContent=fmt(sub);
@@ -1245,9 +1311,13 @@ function sendWA(){
   const doz=totalU/12;
   let msg="🛍️ *Pedido — Glamour Joyas*\n\n";
   cart.forEach(i=>{
-    const d=Math.floor(i.qty/12), r=i.qty%12;
-    const docStr=d>0?(r>0?`${d} doc. + ${r} pz`:`${d} doc.`):`${r} pz`;
-    msg+=`• ${i.name}\n  ${docStr} (${i.qty} piezas) — ${fmt(parseP(i.price)*i.qty)}\n`;
+    const m=i.mode||{label:'Pieza',qty:1,price:parseP(i.price||0)};
+    const units=i.qty/m.qty;
+    const unitsStr=(units%1===0)?units:units.toFixed(1);
+    const d=Math.floor(i.qty/12),r=i.qty%12;
+    const pzStr=d>0?(r>0?d+' doc. + '+r+' pz':d+' doc.'):r+' pz';
+    const lineTotal=m.price*units;
+    msg+='\u2022 '+i.name+' ('+m.label+')\n  '+unitsStr+' '+m.label+(unitsStr!=='1'&&m.qty>1?'s':'')+' = '+pzStr+' \u2014 '+fmt(lineTotal)+'\n';
   });
   msg+=`\n📦 *Resumen:* ${totalU} piezas`;
   msg+=` / ${(totalU/2).toFixed(1).replace(/\.0$/,'')} pares`;
@@ -1349,7 +1419,7 @@ function delCat(c){
 function prevNew(inp){readFile(inp,d=>{newPhoto=d;const i=document.getElementById('np-prev');i.src=d;i.style.display='block'})}
 function prevNew2(inp){readFile(inp,d=>{newPhoto2=d;const j=document.getElementById('np-prev2');j.src=d;j.style.display='block'})}
 function prevNew3(inp){readFile(inp,d=>{newPhoto3=d;const k=document.getElementById('np-prev3');k.src=d;k.style.display='block'})}
-function clearNew(){['np-name','np-price','np-desc'].forEach(id=>document.getElementById(id).value='');newPhoto=null;newPhoto2=null;const i=document.getElementById('np-prev');i.src='';i.style.display='none';document.getElementById('np-file').value='';const j=document.getElementById('np-prev2');if(j){j.src='';j.style.display='none';}document.getElementById('np-file2').value='';newPhoto3=null;const k=document.getElementById('np-prev3');if(k){k.src='';k.style.display='none';}document.getElementById('np-file3').value='';document.getElementById('np-badge').value='';document.getElementById('np-featured').checked=false;}
+function clearNew(){['np-name','np-price','np-desc'].forEach(id=>document.getElementById(id).value='');document.getElementById('np-modes-list').innerHTML='';newPhoto=null;newPhoto2=null;const i=document.getElementById('np-prev');i.src='';i.style.display='none';document.getElementById('np-file').value='';const j=document.getElementById('np-prev2');if(j){j.src='';j.style.display='none';}document.getElementById('np-file2').value='';newPhoto3=null;const k=document.getElementById('np-prev3');if(k){k.src='';k.style.display='none';}document.getElementById('np-file3').value='';document.getElementById('np-badge').value='';document.getElementById('np-featured').checked=false;}
 function addProd(){
   const name=document.getElementById('np-name').value.trim();
   const price=parseP(document.getElementById('np-price').value);
@@ -1357,7 +1427,8 @@ function addProd(){
   if(!name){showFieldErr('np-name','np-name-err');valid=false;}
   if(!price){showFieldErr('np-price','np-price-err');valid=false;}
   if(!valid)return;
-  DB.products.push({id:DB.nextId++,name,category:document.getElementById('np-cat').value,price,material:document.getElementById('np-mat').value,description:document.getElementById('np-desc').value.trim(),badge:document.getElementById('np-badge').value,featured:document.getElementById('np-featured').checked,image:newPhoto,image2:newPhoto2,image3:newPhoto3});
+  const npModes=getModesFromForm('np');
+  DB.products.push({id:DB.nextId++,name,category:document.getElementById('np-cat').value,price,material:document.getElementById('np-mat').value,description:document.getElementById('np-desc').value.trim(),badge:document.getElementById('np-badge').value,featured:document.getElementById('np-featured').checked,image:newPhoto,image2:newPhoto2,image3:newPhoto3,modes:npModes});
   save();clearNew();renderProdList();renderFeatured();renderGrid();toast("✓ Producto agregado");
 }
 
@@ -1384,6 +1455,11 @@ function openEdit(id){
   const prev=document.getElementById('eprev');
   if(p.image){prev.src=p.image;prev.style.display='block'}else{prev.src='';prev.style.display='none'}
   document.getElementById('efile').value='';
+  // Load modes
+  const epList=document.getElementById('ep-modes-list');
+  epList.innerHTML='';
+  const existModes=p.modes&&p.modes.length>0?p.modes:[{key:'pieza',label:'Pieza',qty:1,price:parseP(p.price)}];
+  existModes.forEach(m=>addModeRow('ep',m.key,m.label,m.qty,m.price));
   document.getElementById('modover').classList.add('on');
 }
 function prevEdit(inp){readFile(inp,d=>{editPhoto=d;const i=document.getElementById('eprev');i.src=d;i.style.display='block'})}
@@ -1402,7 +1478,7 @@ function saveEdit(){
     price:eprice,
     material:document.getElementById('emat').value,
     description:document.getElementById('edesc').value.trim(),
-    badge:document.getElementById('ebadge').value,featured:document.getElementById('efeatured').checked,image:editPhoto,image2:editPhoto2,image3:editPhoto3}:p);
+    badge:document.getElementById('ebadge').value,featured:document.getElementById('efeatured').checked,image:editPhoto,image2:editPhoto2,image3:editPhoto3,modes:getModesFromForm('ep')}:p);
   save();closeMod();renderProdList();renderFeatured();renderGrid();toast("✓ Actualizado");
 }
 function delProd(id){
@@ -1452,6 +1528,52 @@ function clearFieldErr(inputId,errId){
 }
 
 renderCatBar();
+// ── ADMIN MODE BUILDER HELPERS ────────────────────────────
+let _modeRowId=0;
+function addModeRow(prefix,key,label,qty,price){
+  const id='mrow-'+(++_modeRowId);
+  const list=document.getElementById(prefix+'-modes-list');if(!list)return;
+  const row=document.createElement('div');
+  row.className='mode-row';row.id=id;
+  row.innerHTML=
+    '<input class="ainp mode-inp-lbl" placeholder="Nombre (Pieza, Docena…)" value="'+escH(String(label||''))+'" data-field="label">'+
+    '<input class="ainp mode-inp-qty" type="number" min="1" placeholder="Cant" value="'+(qty||1)+'" data-field="qty">'+
+    '<input class="ainp mode-inp-price" type="text" inputmode="numeric" placeholder="Precio" value="'+(price||'')+'" data-field="price">'+
+    '<button type="button" class="mode-row-rm" onclick="document.getElementById(''+id+'').remove()" title="Eliminar">✕</button>';
+  list.appendChild(row);
+}
+function addPresetMode(prefix,label,qty){
+  const baseInp=document.getElementById((prefix==='ep'?'eprice':'np-price'));
+  const basePrice=baseInp?parseP(baseInp.value):0;
+  const suggestedPrice=basePrice>0?Math.round(basePrice*qty*0.92):0;
+  addModeRow(prefix,label.toLowerCase().replace(/\s+/g,'-'),label,qty,suggestedPrice||'');
+}
+function addCustomModeRow(prefix){addModeRow(prefix,'','',1,'');}
+function getModesFromForm(prefix){
+  const list=document.getElementById(prefix+'-modes-list');if(!list)return[];
+  const rows=list.querySelectorAll('.mode-row');
+  const modes=[];
+  rows.forEach(row=>{
+    const lbl=row.querySelector('[data-field="label"]').value.trim();
+    const qty=parseInt(row.querySelector('[data-field="qty"]').value)||1;
+    const price=parseP(row.querySelector('[data-field="price"]').value);
+    if(lbl&&price>0)modes.push({key:lbl.toLowerCase().replace(/\s+/g,'-'),label:lbl,qty,price});
+  });
+  return modes;
+}
+function syncBasePriceToModes(prefix){
+  const baseInp=document.getElementById(prefix==='ep'?'eprice':'np-price');
+  if(!baseInp)return;
+  const base=parseP(baseInp.value);if(!base)return;
+  const list=document.getElementById(prefix+'-modes-list');if(!list)return;
+  const firstRow=list.querySelector('.mode-row');
+  if(firstRow){
+    const priceInp=firstRow.querySelector('[data-field="price"]');
+    if(priceInp&&!parseP(priceInp.value))priceInp.value=base;
+  }
+}
+function escH(s){return s.replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');}
+
 // ── FEATURED SECTION ──────────────────────────────────────
 function renderFeatured(){
   const list=DB.products.filter(p=>p.featured);
@@ -1486,7 +1608,8 @@ function renderFeatured(){
         <div class="cname">${p.name}</div>
         <div class="cref">Ref: ${String(p.id).padStart(5,'0')}</div>
         <div class="cdiv"></div>
-        <div class="cprice">${fmt(parseP(p.price))}</div>
+        ${(()=>{const ms=getEffectiveModes(p);const si=selectedMode[p.id]||0;const sm=ms[si]||ms[0];return ms.length>1?'<div class="mode-sel" id="msel-'+p.id+'">'+ms.map((m,i)=>'<button class="mode-btn'+(i===si?' on':'')+'" onclick="selectMode('+p.id+','+i+')"><span class="mode-btn-lbl">'+m.label.toUpperCase()+'</span><span class="mode-btn-price">'+fmt(m.price)+'</span></button>').join('')+'</div>':''})()}
+        <div class="cprice" id="cprice-${p.id}">${fmt((getEffectiveModes(p)[selectedMode[p.id]||0]||getEffectiveModes(p)[0]).price)}</div>
         <button class="btn-add" onclick="addToCart(${p.id})">+ AGREGAR AL CARRITO</button>
         <button class="btn-wa-quick" onclick="waProduct(${p.id})"><svg viewBox='0 0 24 24' style='width:13px;height:13px;fill:#6ec97a'><path d='M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413z'/><path d='M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.114 1.523 5.845L.057 23.428a.5.5 0 00.609.61l5.718-1.484A11.95 11.95 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.947 0-3.77-.527-5.339-1.443l-.383-.225-3.393.881.896-3.285-.246-.399A9.955 9.955 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z'/></svg>CONSULTAR POR WHATSAPP</button>
       </div>
