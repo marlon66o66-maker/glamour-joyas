@@ -348,6 +348,51 @@ footer{text-align:center;padding:18px;color:rgba(90,85,80,.4);font-size:7px;lett
   .trust-item{min-width:130px;padding:6px 12px}
   #trust-bar{gap:0;padding:12px 10px}
 }
+
+/* ── INFO BUTTON ── */
+#info-btn{display:flex;align-items:center;gap:7px;margin:0 auto;padding:9px 22px;background:transparent;border:1px solid var(--ab);color:var(--a);border-radius:2px;cursor:pointer;font-family:'Montserrat',sans-serif;font-size:9px;letter-spacing:2.5px;transition:all .25s;width:max-content}
+#info-btn:hover{background:var(--ad);border-color:var(--a)}
+#info-btn-wrap{padding:16px 20px 10px;display:flex;justify-content:center;border-bottom:1px solid var(--ab);background:linear-gradient(180deg,var(--ad),transparent)}
+/* ── INFO MODAL ── */
+#info-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:600;align-items:center;justify-content:center;padding:18px}
+#info-modal.on{display:flex}
+.ibox{background:#0f0f0f;border:1px solid var(--ab);border-radius:8px;padding:30px 26px;width:100%;max-width:420px;position:relative}
+.ibox-close{position:absolute;top:14px;right:16px;background:transparent;border:none;color:var(--muted);font-size:22px;cursor:pointer;transition:color .2s;line-height:1}
+.ibox-close:hover{color:var(--text)}
+.ibox-title{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;color:var(--text);letter-spacing:4px;margin-bottom:6px}
+.ibox-sub{font-size:8px;letter-spacing:3px;color:var(--a);margin-bottom:20px}
+.ibox-line{width:40px;height:1px;background:linear-gradient(90deg,transparent,var(--a),transparent);margin:0 auto 22px}
+.ibox-section{margin-bottom:18px}
+.ibox-section-title{font-size:7px;letter-spacing:3.5px;color:var(--a);margin-bottom:10px;border-bottom:1px solid var(--ab);padding-bottom:7px}
+.ibox-item{display:flex;align-items:flex-start;gap:10px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.ibox-item:last-child{border-bottom:none}
+.ibox-icon{font-size:16px;flex-shrink:0;margin-top:1px}
+.ibox-text{font-size:11px;color:var(--text);line-height:1.5}
+.ibox-text b{color:var(--a);display:block;font-size:9px;letter-spacing:1.5px;margin-bottom:1px;font-weight:500}
+/* ── SEARCH & SORT BAR ── */
+#search-sort-bar{display:flex;gap:9px;padding:0 20px 14px;align-items:center;flex-wrap:wrap}
+#search-inp{flex:1;min-width:160px;background:#141414;border:1px solid var(--ab);border-radius:2px;padding:9px 14px 9px 36px;color:var(--text);font-family:'Montserrat',sans-serif;font-size:11px;outline:none;transition:border-color .2s}
+#search-inp:focus{border-color:var(--a)}
+#search-inp::placeholder{color:var(--muted);font-size:9px;letter-spacing:1.5px}
+.search-wrap{position:relative;flex:1;min-width:160px}
+.search-icon{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:13px;pointer-events:none}
+#search-clear{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);font-size:14px;cursor:pointer;display:none;padding:2px;line-height:1;transition:color .2s}
+#search-clear:hover{color:var(--text)}
+#search-clear.on{display:block}
+#sort-sel{background:#141414;border:1px solid var(--ab);border-radius:2px;padding:9px 10px;color:var(--a);font-family:'Montserrat',sans-serif;font-size:8px;letter-spacing:1.5px;outline:none;cursor:pointer;transition:border-color .2s;flex-shrink:0}
+#sort-sel:focus{border-color:var(--a)}
+#sort-sel option{background:#141414;color:var(--text)}
+.search-count{font-size:8px;letter-spacing:2px;color:var(--muted);flex-basis:100%;padding:0 2px}
+/* ── CART CONFIRMATION FLASH ── */
+@keyframes cartFlash{0%{transform:scale(1)}30%{transform:scale(1.18)}70%{transform:scale(.95)}100%{transform:scale(1)}}
+.badge-flash{animation:cartFlash .4s cubic-bezier(.4,0,.2,1)}
+/* ── TOAST ENHANCED ── */
+#toast{position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--a);color:var(--bg);padding:10px 24px;border-radius:3px;font-size:9px;letter-spacing:2px;z-index:999;transition:transform .35s cubic-bezier(.4,0,.2,1),opacity .35s;white-space:nowrap;pointer-events:none;opacity:0;display:flex;align-items:center;gap:8px;box-shadow:0 6px 24px rgba(0,0,0,.5)}
+#toast.on{transform:translateX(-50%) translateY(0);opacity:1}
+/* ── ADMIN VALIDATION ── */
+.field-err{border-color:#b05050!important;box-shadow:0 0 0 2px rgba(176,80,80,.15)}
+.err-msg{font-size:9px;color:#b05050;letter-spacing:1px;margin-top:4px;display:none}
+.err-msg.on{display:block}
 </style>
 </head>
 <body>
@@ -381,12 +426,48 @@ footer{text-align:center;padding:18px;color:rgba(90,85,80,.4);font-size:7px;lett
     <h1 class="hero-title" id="hero-title">CATÁLOGO DE JOYAS</h1>
     <div class="hero-line" id="hero-line"></div>
   </div>
-  <!-- TRUST BAR -->
-  <div id="trust-bar">
-    <div class="trust-item"><span class="trust-icon">🚚</span><div class="trust-text"><b>ENVÍOS A TODO USA</b>Rápido y seguro</div></div>
-    <div class="trust-item"><span class="trust-icon">💎</span><div class="trust-text"><b>JOYERÍA XUPING</b>Alta calidad garantizada</div></div>
-    <div class="trust-item"><span class="trust-icon">📦</span><div class="trust-text"><b>PEDIDOS AL MAYOR</b>Descuentos automáticos</div></div>
-    <div class="trust-item"><span class="trust-icon">⭐</span><div class="trust-text"><b>ATENCIÓN PERSONAL</b>Respuesta inmediata</div></div>
+  <!-- INFO BUTTON (replaces trust bar) -->
+  <div id="info-btn-wrap">
+    <button id="info-btn" onclick="openInfo()">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      ENVÍOS · CALIDAD · MAYOREO · ATENCIÓN
+    </button>
+  </div>
+
+  <!-- INFO MODAL -->
+  <div id="info-modal" onclick="if(event.target===this)closeInfo()">
+    <div class="ibox">
+      <button class="ibox-close" onclick="closeInfo()">✕</button>
+      <div style="text-align:center;margin-bottom:16px">
+        <div class="ibox-sub">✦ GLAMOUR JOYAS ✦</div>
+        <div class="ibox-title">Información</div>
+        <div class="ibox-line"></div>
+      </div>
+
+      <div class="ibox-section">
+        <div class="ibox-section-title">🚚 ENVÍOS</div>
+        <div class="ibox-item"><span class="ibox-icon">🇺🇸</span><div class="ibox-text"><b>USA</b>Envíos a todo Estados Unidos, rápido y seguro.</div></div>
+        <div class="ibox-item"><span class="ibox-icon">🇨🇴</span><div class="ibox-text"><b>COLOMBIA</b>Entregas a todo el territorio colombiano.</div></div>
+        <div class="ibox-item"><span class="ibox-icon">🇻🇪</span><div class="ibox-text"><b>VENEZUELA</b>Envíos disponibles a Venezuela.</div></div>
+        <div class="ibox-item"><span class="ibox-icon">🌎</span><div class="ibox-text"><b>LATINOAMÉRICA</b>Llegamos a toda la región latinoamericana.</div></div>
+      </div>
+
+      <div class="ibox-section">
+        <div class="ibox-section-title">💎 CALIDAD & PROVEEDORES</div>
+        <div class="ibox-item"><span class="ibox-icon">✦</span><div class="ibox-text"><b>XUPING Y MÁS</b>Trabajamos con Xuping y otros proveedores premium de alta calidad. Materiales de cobre y acero con acabados de lujo.</div></div>
+      </div>
+
+      <div class="ibox-section">
+        <div class="ibox-section-title">📦 MODALIDADES DE COMPRA</div>
+        <div class="ibox-item"><span class="ibox-icon">🛍</span><div class="ibox-text"><b>VENTA AL DETAL</b>Comprá las piezas que necesitás, sin mínimo.</div></div>
+        <div class="ibox-item"><span class="ibox-icon">📦</span><div class="ibox-text"><b>VENTA AL POR MAYOR</b>Descuentos automáticos por volumen. 10% desde 12 docenas, hasta 30% a partir de 55 docenas.</div></div>
+      </div>
+
+      <div class="ibox-section" style="margin-bottom:0">
+        <div class="ibox-section-title">⭐ ATENCIÓN</div>
+        <div class="ibox-item"><span class="ibox-icon">💬</span><div class="ibox-text"><b>PERSONALIZADA</b>Atención directa vía WhatsApp. Respuesta inmediata para cotizaciones y pedidos.</div></div>
+      </div>
+    </div>
   </div>
 
   <!-- FEATURED SECTION -->
@@ -400,6 +481,24 @@ footer{text-align:center;padding:18px;color:rgba(90,85,80,.4);font-size:7px;lett
   </div>
 
   <div id="cat-bar"></div>
+
+  <!-- SEARCH & SORT BAR -->
+  <div id="search-sort-bar">
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input id="search-inp" type="search" placeholder="BUSCAR POR NOMBRE, REF O CATEGORÍA..." oninput="onSearch(this.value)" autocomplete="off">
+      <button id="search-clear" onclick="clearSearch()" title="Limpiar búsqueda">✕</button>
+    </div>
+    <select id="sort-sel" onchange="onSort(this.value)">
+      <option value="default">↕ MÁS RECIENTES</option>
+      <option value="price-asc">↑ MENOR PRECIO</option>
+      <option value="price-desc">↓ MAYOR PRECIO</option>
+      <option value="name-az">A → Z</option>
+      <option value="name-za">Z → A</option>
+    </select>
+    <div class="search-count" id="search-count" style="display:none"></div>
+  </div>
+
   <div id="grid"></div>
   <footer>GLAMOUR JOYAS &nbsp;·&nbsp; COBRE Y ACERO DE ALTA CALIDAD &nbsp;·&nbsp; 311 476 7098</footer>
 
@@ -432,11 +531,13 @@ footer{text-align:center;padding:18px;color:rgba(90,85,80,.4);font-size:7px;lett
       <div class="asec">
         <div class="asectitle">AGREGAR PRODUCTO</div>
         <label class="albl">NOMBRE</label>
-        <input class="ainp" id="np-name" placeholder="Ej: Anillo Vintage">
+        <input class="ainp" id="np-name" placeholder="Ej: Anillo Vintage" oninput="clearFieldErr('np-name','np-name-err')">
+        <div class="err-msg" id="np-name-err">⚠ El nombre es obligatorio.</div>
         <label class="albl">CATEGORÍA</label>
         <select class="ainp" id="np-cat"></select>
         <label class="albl">PRECIO</label>
-        <input class="ainp" id="np-price" type="text" inputmode="numeric" placeholder="Ej: 29000 ó 29.000">
+        <input class="ainp" id="np-price" type="text" inputmode="numeric" placeholder="Ej: 29000 ó 29.000" oninput="clearFieldErr('np-price','np-price-err')">
+        <div class="err-msg" id="np-price-err">⚠ El precio debe ser mayor a cero.</div>
         <label class="albl">MATERIAL</label>
         <select class="ainp" id="np-mat">
           <option>Acero</option><option>Cobre</option><option>Acero y Cobre</option>
@@ -708,6 +809,7 @@ function loadDB(){try{const r=localStorage.getItem(DKEY);return r?JSON.parse(r):
 function save(){localStorage.setItem(DKEY,JSON.stringify(DB))}
 let DB=loadDB();
 let cart=[], activeCat="Todos", activeMat="cobre", adminOk=false;
+let activeSearch="", activeSortMode="default";
 let newPhoto=null, newPhoto2=null, newPhoto3=null, editPhoto=null, editPhoto2=null, editPhoto3=null;
 
 // LOGO
@@ -729,6 +831,10 @@ function readFile(inp,cb){const f=inp.files[0];if(!f)return;const r=new FileRead
 function setMaterial(mat){
   activeMat=mat;
   activeCat="Todos";
+  activeSearch="";
+  const sinp=document.getElementById('search-inp');if(sinp)sinp.value='';
+  const sclear=document.getElementById('search-clear');if(sclear)sclear.classList.remove('on');
+  const scount=document.getElementById('search-count');if(scount)scount.style.display='none';
   if(mat==='acero'){
     document.body.classList.add('silver');
     document.getElementById('ts-copper').classList.remove('ts-active');
@@ -764,8 +870,39 @@ function renderGrid(){
   // Then by category
   if(activeCat!=="Todos") list=list.filter(p=>p.category===activeCat);
 
+  // Then by search
+  if(activeSearch){
+    const q=activeSearch.toLowerCase();
+    list=list.filter(p=>
+      p.name.toLowerCase().includes(q)||
+      p.category.toLowerCase().includes(q)||
+      String(p.id).padStart(5,'0').includes(q)
+    );
+  }
+
+  // Sort
+  if(activeSortMode==='price-asc') list=[...list].sort((a,b)=>parseP(a.price)-parseP(b.price));
+  else if(activeSortMode==='price-desc') list=[...list].sort((a,b)=>parseP(b.price)-parseP(a.price));
+  else if(activeSortMode==='name-az') list=[...list].sort((a,b)=>a.name.localeCompare(b.name,'es'));
+  else if(activeSortMode==='name-za') list=[...list].sort((a,b)=>b.name.localeCompare(a.name,'es'));
+  // default: most recent = highest id first
+  else list=[...list].sort((a,b)=>b.id-a.id);
+
+  // Update search result count
+  const countEl=document.getElementById('search-count');
+  if(countEl){
+    if(activeSearch){
+      countEl.style.display='block';
+      countEl.textContent=list.length===0?'Sin resultados para "'+activeSearch+'"':list.length+' resultado'+(list.length!==1?'s':'');
+    } else {
+      countEl.style.display='none';
+    }
+  }
+
   if(!list.length){
-    grid.innerHTML=`<div class="empty">SIN PRODUCTOS EN ESTA SECCIÓN</div>`;
+    grid.innerHTML=activeSearch
+      ?`<div class="empty">SIN RESULTADOS PARA "${activeSearch.toUpperCase()}"</div>`
+      :`<div class="empty">SIN PRODUCTOS EN ESTA SECCIÓN</div>`;
     return;
   }
   const isSilver=document.body.classList.contains('silver');
@@ -865,13 +1002,18 @@ function galEnd(e,id){
 function addToCart(id){
   const p=DB.products.find(x=>x.id===id);if(!p)return;
   const ex=cart.find(i=>i.id===id);
-  if(ex)ex.qty++;else cart.push({...p,qty:1});
-  updateBadge();toast("✓ Agregado al carrito");
+  if(ex)ex.qty+=stepOf();else cart.push({id:p.id,name:p.name,price:p.price,image:p.image||null,qty:stepOf()});
+  updateBadge();
+  const shortName=p.name.length>28?p.name.substring(0,27)+'…':p.name;
+  toast('✓ '+shortName);
 }
 function updateBadge(){
   const n=cart.reduce((s,i)=>s+i.qty,0);
   const b=document.getElementById('badge');
-  b.textContent=n;b.classList.toggle('on',n>0);
+  b.classList.remove('badge-flash');
+  void b.offsetWidth;
+  b.textContent=n;
+  if(n>0){b.classList.add('on');b.classList.add('badge-flash')}else b.classList.remove('on');
 }
 function openCart(){renderCart();document.getElementById('overlay').classList.add('on');document.getElementById('drawer').classList.add('on')}
 function closeCart(){document.getElementById('overlay').classList.remove('on');document.getElementById('drawer').classList.remove('on')}
@@ -1190,7 +1332,8 @@ function saveCat(old,k){
 }
 function addCat(){
   const v=document.getElementById('newcat').value.trim();
-  if(!v||DB.categories.includes(v)){toast("Nombre inválido o ya existe");return}
+  if(!v){toast("⚠ El nombre de la categoría no puede estar vacío.");return}
+  if(DB.categories.includes(v)){toast("⚠ Ya existe una categoría con ese nombre.");return}
   DB.categories.push(v);save();
   document.getElementById('newcat').value='';
   renderCatList();fillCatSelects();renderCatBar();toast("✓ Categoría agregada");
@@ -1210,7 +1353,10 @@ function clearNew(){['np-name','np-price','np-desc'].forEach(id=>document.getEle
 function addProd(){
   const name=document.getElementById('np-name').value.trim();
   const price=parseP(document.getElementById('np-price').value);
-  if(!name||!price){toast("Nombre y precio son obligatorios");return}
+  let valid=true;
+  if(!name){showFieldErr('np-name','np-name-err');valid=false;}
+  if(!price){showFieldErr('np-price','np-price-err');valid=false;}
+  if(!valid)return;
   DB.products.push({id:DB.nextId++,name,category:document.getElementById('np-cat').value,price,material:document.getElementById('np-mat').value,description:document.getElementById('np-desc').value.trim(),badge:document.getElementById('np-badge').value,featured:document.getElementById('np-featured').checked,image:newPhoto,image2:newPhoto2,image3:newPhoto3});
   save();clearNew();renderProdList();renderFeatured();renderGrid();toast("✓ Producto agregado");
 }
@@ -1246,10 +1392,14 @@ function prevEdit3(inp){readFile(inp,d=>{editPhoto3=d;const k=document.getElemen
 function closeMod(){document.getElementById('modover').classList.remove('on')}
 function saveEdit(){
   const id=parseInt(document.getElementById('eid').value);
+  const ename=document.getElementById('ename').value.trim();
+  const eprice=parseP(document.getElementById('eprice').value);
+  if(!ename){toast("⚠ El nombre del producto no puede estar vacío.");document.getElementById('ename').focus();return;}
+  if(!eprice){toast("⚠ El precio debe ser mayor a cero.");document.getElementById('eprice').focus();return;}
   DB.products=DB.products.map(p=>p.id===id?{...p,
-    name:document.getElementById('ename').value.trim(),
+    name:ename,
     category:document.getElementById('ecat').value,
-    price:parseP(document.getElementById('eprice').value)||p.price,
+    price:eprice,
     material:document.getElementById('emat').value,
     description:document.getElementById('edesc').value.trim(),
     badge:document.getElementById('ebadge').value,featured:document.getElementById('efeatured').checked,image:editPhoto,image2:editPhoto2,image3:editPhoto3}:p);
@@ -1266,6 +1416,41 @@ function uploadLogo(inp){readFile(inp,d=>{localStorage.setItem(LKEY,d);document.
 function resetLogo(){if(!confirm("¿Restaurar el logo original?"))return;localStorage.removeItem(LKEY);document.getElementById('logo-img').src=BUNDLED_LOGO;document.getElementById('logo-prev').src=BUNDLED_LOGO;toast("✓ Logo restaurado")}
 
 // INIT
+
+// ── SEARCH & SORT ──────────────────────────────────────────
+function onSearch(val){
+  activeSearch=val.trim();
+  const clearBtn=document.getElementById('search-clear');
+  if(clearBtn) clearBtn.classList.toggle('on',activeSearch.length>0);
+  renderGrid();
+}
+function clearSearch(){
+  const inp=document.getElementById('search-inp');
+  if(inp) inp.value='';
+  const clearBtn=document.getElementById('search-clear');
+  if(clearBtn) clearBtn.classList.remove('on');
+  activeSearch='';renderGrid();
+}
+function onSort(val){activeSortMode=val;renderGrid();}
+
+// ── INFO MODAL ─────────────────────────────────────────────
+function openInfo(){document.getElementById('info-modal').classList.add('on');document.body.style.overflow='hidden';}
+function closeInfo(){document.getElementById('info-modal').classList.remove('on');document.body.style.overflow='';}
+
+// ── ADMIN FIELD VALIDATION HELPERS ─────────────────────────
+function showFieldErr(inputId,errId){
+  const el=document.getElementById(inputId);
+  const err=document.getElementById(errId);
+  if(el) el.classList.add('field-err');
+  if(err) err.classList.add('on');
+}
+function clearFieldErr(inputId,errId){
+  const el=document.getElementById(inputId);
+  const err=document.getElementById(errId);
+  if(el) el.classList.remove('field-err');
+  if(err) err.classList.remove('on');
+}
+
 renderCatBar();
 // ── FEATURED SECTION ──────────────────────────────────────
 function renderFeatured(){
